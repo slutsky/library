@@ -1,6 +1,6 @@
 <?php
 
-use App\Kernel;
+use Slutsky\Library\Kernel;
 use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
 

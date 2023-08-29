@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Slutsky\Library;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
