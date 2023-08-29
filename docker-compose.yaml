@@ -1,0 +1,35 @@
+version: '3.1'
+
+services:
+  database:
+    image: mysql:8.1.0-oracle
+    ports:
+      - ${MYSQL_PORT}:3306
+    environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+  php:
+    build:
+      context: docker/php
+      args:
+        - WWW_DATA_UID=${DEFAULT_UID}
+        - WWW_DATA_GID=${DEFAULT_GID}
+    volumes:
+      - .:/app
+
+  nginx:
+    build:
+      context: docker/nginx
+      args:
+        - NGINX_UID=${DEFAULT_UID}
+        - NGINX_GID=${DEFAULT_GID}
+    volumes:
+      - .:/app
+    ports:
+      - ${NGINX_PORT}:80
+
+volumes:
+  pgdata:
