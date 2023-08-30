@@ -7,7 +7,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Slutsky\Library\Entity\Author;
 use Slutsky\Library\Entity\Book;
 use Slutsky\Library\Entity\FileInfo;
@@ -17,7 +16,7 @@ use Slutsky\Library\Repository\AuthorRepositoryInterface;
 use Slutsky\Library\Repository\BookRepositoryInterface;
 use Slutsky\Library\Repository\FileInfoRepositoryInterface;
 use Slutsky\Library\Service\BookService;
-use Symfony\Component\Uid\Uuid;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class BookServiceTest extends TestCase
 {
@@ -42,6 +41,11 @@ class BookServiceTest extends TestCase
     private MockObject $entityManager;
 
     /**
+     * @var MockObject&EventDispatcherInterface
+     */
+    private EventDispatcherInterface $eventDispatcher;
+
+    /**
      * @var MockObject&BookRepositoryInterface
      */
     private MockObject $bookRepository;
@@ -57,6 +61,8 @@ class BookServiceTest extends TestCase
         $this->book = $this->createMock(Book::class);
 
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
 
         /**
          * @var MockObject&BookRepositoryInterface $bookRepository
@@ -79,6 +85,7 @@ class BookServiceTest extends TestCase
 
         $this->bookService = new BookService(
             $this->entityManager,
+            $this->eventDispatcher,
             $this->bookRepository,
             $authorRepository,
             $fileInfoRepository
@@ -95,6 +102,10 @@ class BookServiceTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('flush');
         $this->bookRepository->expects($this->once())->method('add');
+
+        $this->eventDispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with($this->isInstanceOf(BookCreatedEvent::class));
 
         $book = $this->bookService->createBook(
             $name,
@@ -148,6 +159,10 @@ class BookServiceTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('flush');
         $this->bookRepository->expects($this->once())->method('remove');
+
+        $this->eventDispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with($this->isInstanceOf(BookRemovedEvent::class));
 
         $this->bookService->removeBook($bookId);
     }

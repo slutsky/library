@@ -38,3 +38,12 @@ services:
     Slutsky\Library\Service\FileService:
         arguments:
             $basePath: '%kernel.project_dir%/var/storage/default'
+
+    Slutsky\Library\EventListener\AuthorNumberOfBooksChangedListener:
+        tags:
+            -   name: kernel.event_listener
+                event: Slutsky\Library\Event\BookCreatedEvent
+                method: increaseNumberOfBookByAuthor
+            -   name: kernel.event_listener
+                event: Slutsky\Library\Event\BookRemovedEvent
+                method: decreaseNumberOfBookByAuthor

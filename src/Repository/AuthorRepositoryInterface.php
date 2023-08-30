@@ -24,6 +24,10 @@ interface AuthorRepositoryInterface
      */
     public function getAll(): array;
 
+    public function increaseNumberOfBooksBy(int $authorId): void;
+
+    public function decreaseNumberOfBooksBy(int $authorId): void;
+
     public function add(Author $author): void;
 
     public function remove(Author $author): void;

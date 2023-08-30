@@ -47,6 +47,36 @@ class AuthorRepository extends ServiceEntityRepository implements
         return $this->findAll();
     }
 
+    public function increaseNumberOfBooksBy(int $authorId): void
+    {
+        static $query = null;
+
+        if (null === $query) {
+            $query = $this->createQueryBuilder('author')
+                ->update()
+                ->set('author.numberOfBooks', 'author.numberOfBooks + 1')
+                ->where('author.id = :authorId')
+                ->getQuery();
+        }
+
+        $query->execute(['authorId' => $authorId]);
+    }
+
+    public function decreaseNumberOfBooksBy(int $authorId): void
+    {
+        static $query = null;
+
+        if (null === $query) {
+            $query = $this->createQueryBuilder('author')
+                ->update()
+                ->set('author.numberOfBooks', 'author.numberOfBooks - 1')
+                ->where('author.id = :authorId')
+                ->getQuery();
+        }
+
+        $query->execute(['authorId' => $authorId]);
+    }
+
     public function add(Author $author): void
     {
         $this->getEntityManager()->persist($author);

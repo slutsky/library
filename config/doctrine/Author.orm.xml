@@ -10,5 +10,10 @@
         </id>
 
         <field name="name" type="string" length="255" nullable="false"/>
+        <field name="numberOfBooks" type="integer" nullable="false">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
     </entity>
 </doctrine-mapping>

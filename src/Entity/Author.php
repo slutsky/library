@@ -6,6 +6,7 @@ class Author
 {
     private ?int $id = null;
     private string $name;
+    private int $numberOfBooks = 0;
 
     public function __construct(string $name)
     {
@@ -25,5 +26,10 @@ class Author
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getNumberOfBooks(): int
+    {
+        return $this->numberOfBooks;
     }
 }
