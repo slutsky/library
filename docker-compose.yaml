@@ -31,5 +31,11 @@ services:
     ports:
       - ${NGINX_PORT}:80
 
+  swagger-ui:
+    image: swaggerapi/swagger-ui:v3.37.2
+    environment:
+      - BASE_URL=/api/doc
+      - SWAGGER_JSON_URL=/index.yaml
+
 volumes:
   pgdata:

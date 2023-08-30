@@ -1,0 +1,375 @@
+openapi: '3.0.2'
+info:
+  title: Library
+  version: '1.0'
+
+servers:
+  - url: /
+
+paths:
+  /files:
+    post:
+      operationId: uploadFile
+      summary: Upload file
+      tags:
+        - File
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200': { $ref: '#/components/responses/FileInfo' }
+        '422': { $ref: '#/components/responses/UnprocessableEntityResponse' }
+
+  /files/{fileId}:
+    get:
+      operationId: downloadFile
+      summary: Download file
+      tags:
+        - File
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200': { $ref: '#/components/responses/FileContentResponse' }
+        '404': { $ref: '#/components/responses/NotFoundResponse' }
+
+  /files/{fileId}/info:
+    get:
+      operationId: getFileInfo
+      summary: Get file info
+      tags:
+        - File
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200': { $ref: '#/components/responses/FileInfo' }
+        '404': { $ref: '#/components/responses/NotFoundResponse' }
+
+  /authors:
+    get:
+      operationId: getAuthors
+      summary: Get authors
+      tags:
+        - Authors
+      responses:
+        '200': { $ref: '#/components/responses/Authors' }
+
+    post:
+      operationId: createAuthor
+      summary: Create author
+      tags:
+        - Authors
+      requestBody: { $ref: '#/components/requestBodies/AuthorChange' }
+      responses:
+        '200': { $ref: '#/components/responses/Author' }
+        '400': { $ref: '#/components/responses/BadRequestResponse' }
+        '422': { $ref: '#/components/responses/UnprocessableEntityResponse' }
+
+  /authors/{authorId}:
+    parameters:
+      - name: authorId
+        in: path
+        required: true
+        schema:
+          type: number
+
+    get:
+      operationId: getAuthor
+      summary: Get author
+      tags:
+        - Authors
+      responses:
+        '200': { $ref: '#/components/responses/Author' }
+        '404': { $ref: '#/components/responses/NotFoundResponse' }
+
+    put:
+      operationId: updateAuthor
+      summary: Update author
+      tags:
+        - Authors
+      requestBody: { $ref: '#/components/requestBodies/AuthorChange' }
+      responses:
+        '200': { $ref: '#/components/responses/Author' }
+        '400': { $ref: '#/components/responses/BadRequestResponse' }
+        '404': { $ref: '#/components/responses/NotFoundResponse' }
+        '422': { $ref: '#/components/responses/UnprocessableEntityResponse' }
+
+    delete:
+      operationId: deleteAuthor
+      summary: Delete author
+      tags:
+        - Authors
+      responses:
+        '201': { $ref: '#/components/responses/NoContentResponse' }
+        '404': { $ref: '#/components/responses/NotFoundResponse' }
+
+  /books:
+    get:
+      operationId: getBooks
+      summary: Get books
+      tags:
+        - Books
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: author[]
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: number
+        - name: description
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cover
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: publishedBefore
+          in: query
+          required: false
+          schema:
+            type: string
+            format: datetime
+        - name: publishedAfter
+          in: query
+          required: false
+          schema:
+            type: string
+            format: datetime
+      responses:
+        '200': { $ref: '#/components/responses/Books' }
+
+    post:
+      operationId: createBook
+      summary: Create book
+      tags:
+        - Books
+      requestBody: { $ref: '#/components/requestBodies/BookChange' }
+      responses:
+        '200': { $ref: '#/components/responses/Book' }
+        '400': { $ref: '#/components/responses/BadRequestResponse' }
+        '422': { $ref: '#/components/responses/UnprocessableEntityResponse' }
+
+  /books/{bookId}:
+    parameters:
+      - name: bookId
+        in: path
+        required: true
+        schema:
+          type: number
+
+    get:
+      operationId: getBook
+      summary: Get book
+      tags:
+        - Books
+      responses:
+        '200': { $ref: '#/components/responses/Book' }
+        '404': { $ref: '#/components/responses/NotFoundResponse' }
+
+    put:
+      operationId: updateBook
+      summary: Update book
+      tags:
+        - Books
+      requestBody: { $ref: '#/components/requestBodies/BookChange' }
+      responses:
+        '200': { $ref: '#/components/responses/Book' }
+        '400': { $ref: '#/components/responses/BadRequestResponse' }
+        '404': { $ref: '#/components/responses/NotFoundResponse' }
+        '422': { $ref: '#/components/responses/UnprocessableEntityResponse' }
+
+    delete:
+      operationId: deleteBook
+      summary: Delete book
+      tags:
+        - Books
+      responses:
+        '201': { $ref: '#/components/responses/NoContentResponse' }
+        '404': { $ref: '#/components/responses/NotFoundResponse' }
+
+components:
+  requestBodies:
+    AuthorChange:
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/AuthorChange' }
+
+    BookChange:
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/BookChange' }
+    
+  responses:
+    NoContentResponse:
+      description: No content
+
+    BadRequestResponse:
+      description: Bad request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+    UnprocessableEntityResponse:
+      description: Unprocessable entity
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ValidationError' }
+
+    NotFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+    FileContentResponse:
+      description: File content
+      content:
+        '*/*':
+          schema:
+            type: string
+            format: binary
+
+    FileInfo:
+      description: File info
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/FileInfo' }
+
+    Authors:
+      description: Authors
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Authors' }
+
+    Author:
+      description: Author
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Author' }
+
+    Books:
+      description: Authors
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Books' }
+
+    Book:
+      description: Author
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Book' }
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+        violations:
+          type: array
+          items:
+            type: object
+            properties:
+              propertyPath:
+                type: string
+              message:
+                type: string
+
+    FileInfo:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        path:
+          type: string
+
+    Author:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        numberOfBooks:
+          type: number
+
+    Authors:
+      type: array
+      items: { $ref: '#/components/schemas/Author' }
+
+    AuthorChange:
+      type: object
+      properties:
+        name:
+          type: string
+
+    BookChange:
+      type: object
+      properties:
+        name:
+          type: string
+        authors:
+          type: array
+          items:
+            type: number
+        description:
+          type: string
+        cover:
+          type: string
+          format: uuid
+        publishedAt:
+          type: string
+          format: datetime
+
+    Books:
+      type: array
+      items: { $ref: '#/components/schemas/Book' }
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        authors:
+          type: array
+          items: { $ref: '#/components/schemas/Author' }
+        description:
+          type: string
+        cover: { $ref: '#/components/schemas/FileInfo' }
+        publishedAt:
+          type: string
+          format: datetime
