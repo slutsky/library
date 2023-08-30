@@ -3,9 +3,11 @@
 namespace Slutsky\Library\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 use Slutsky\Library\Entity\Book;
 use Slutsky\Library\Exception\BookNotFoundException;
+use Slutsky\Library\Specification\BookSpecificationInterface;
 
 class BookRepository extends ServiceEntityRepository implements
     BookRepositoryInterface
@@ -32,9 +34,18 @@ class BookRepository extends ServiceEntityRepository implements
     /**
      * @return Book[]
      */
-    public function getAll(): array
+    public function getAll(?BookSpecificationInterface $specification = null): array
     {
-        return $this->findAll();
+        $queryBuilder = $this->createQueryBuilder('book');
+
+        if (null !== $specification) {
+            $queryBuilder->innerJoin('book.authors', 'author');
+            $queryBuilder->addCriteria(new Criteria($specification->toExpression()));
+        }
+
+        $query = $queryBuilder->getQuery();
+
+        return $query->getResult();
     }
 
     public function add(Book $book): void

@@ -24,7 +24,10 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
+            - '../src/Dto/'
             - '../src/Entity/'
+            - '../src/Event/'
+            - '../src/Specification/'
             - '../src/Kernel.php'
 
     # controllers are imported separately to make sure services can be injected

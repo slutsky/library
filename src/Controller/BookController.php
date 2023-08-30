@@ -20,17 +20,20 @@ class BookController extends AbstractController
     private BookService $bookService;
     private BookChangeSerializer $changeSerializer;
     private BookChangeValidator $changeValidator;
+    private BookSpecificationFactory $bookSpecificationFactory;
 
     public function __construct(
         BookRepositoryInterface $bookRepository,
         BookService $bookService,
         BookChangeSerializer $changeSerializer,
-        BookChangeValidator $changeValidator
+        BookChangeValidator $changeValidator,
+        BookSpecificationFactory $bookSpecificationFactory
     ) {
         $this->bookRepository = $bookRepository;
         $this->bookService = $bookService;
         $this->changeSerializer = $changeSerializer;
         $this->changeValidator = $changeValidator;
+        $this->bookSpecificationFactory = $bookSpecificationFactory;
     }
 
     /**
@@ -38,7 +41,9 @@ class BookController extends AbstractController
      */
     public function getBooksAction(Request $request): JsonResponse
     {
-        $books = $this->bookRepository->getAll();
+        $specification = $this->bookSpecificationFactory->fromRequest($request);
+
+        $books = $this->bookRepository->getAll($specification);
 
         return $this->json($books);
     }

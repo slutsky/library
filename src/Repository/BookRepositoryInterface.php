@@ -4,6 +4,7 @@ namespace Slutsky\Library\Repository;
 
 use Slutsky\Library\Entity\Book;
 use Slutsky\Library\Exception\BookNotFoundException;
+use Slutsky\Library\Specification\BookSpecificationInterface;
 
 interface BookRepositoryInterface
 {
@@ -15,7 +16,7 @@ interface BookRepositoryInterface
     /**
      * @return Book[]
      */
-    public function getAll(): array;
+    public function getAll(?BookSpecificationInterface $specification = null): array;
 
     public function add(Book $book): void;
 
